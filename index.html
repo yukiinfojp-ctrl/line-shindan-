@@ -1,416 +1,390 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>マッチングアプリLINE脈あり＆即レス診断｜ユウキ</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", YuGothic, Meiryo, sans-serif;
-      background-color: #f4f7fa;
-      color: #2c3e50;
-      line-height: 1.65;
-    }
-    .container {
-      max-width: 480px;
-      margin: 0 auto;
-      min-height: 100vh;
-      background-color: #ffffff;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
-      display: flex;
-      flex-direction: column;
-    }
-    header {
-      background-color: #14284b;
-      color: #ffffff;
-      padding: 16px 20px;
-      text-align: center;
-    }
-    .account-badge {
-      display: inline-block;
-      font-size: 11px;
-      background: rgba(255, 255, 255, 0.16);
-      padding: 3px 12px;
-      border-radius: 20px;
-      margin-bottom: 6px;
-    }
-    header h1 {
-      font-size: 18px;
-      font-weight: 700;
-    }
-    main {
-      padding: 24px 20px;
-      flex: 1;
-    }
-    .hero-box {
-      text-align: center;
-      padding: 6px 0 16px;
-    }
-    .hero-tag {
-      color: #14284b;
-      font-weight: 700;
-      font-size: 13px;
-      background: #e8eef7;
-      display: inline-block;
-      padding: 4px 12px;
-      border-radius: 4px;
-      margin-bottom: 14px;
-    }
-    .hero-title {
-      font-size: 21px;
-      font-weight: 800;
-      color: #14284b;
-      line-height: 1.45;
-      margin-bottom: 14px;
-    }
-    .hero-desc {
-      font-size: 14px;
-      color: #2c3e50;
-      margin-bottom: 22px;
-      text-align: left;
-      background: #f4f7fa;
-      padding: 16px;
-      border-radius: 8px;
-    }
-    .feature-list {
-      list-style: none;
-      text-align: left;
-      margin-bottom: 26px;
-      font-size: 14px;
-    }
-    .feature-list li {
-      margin-bottom: 10px;
-      padding-left: 24px;
-      position: relative;
-      font-weight: 700;
-    }
-    .feature-list li::before {
-      content: "✔";
-      position: absolute;
-      left: 0;
-      color: #e67e22;
-    }
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 700;
-      text-align: center;
-      cursor: pointer;
-      text-decoration: none;
-    }
-    .btn-primary {
-      background-color: #14284b;
-      color: #ffffff;
-      box-shadow: 0 4px 12px rgba(20, 40, 75, 0.22);
-    }
-    .progress-wrap {
-      margin-bottom: 22px;
-    }
-    .progress-text {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 700;
-      color: #14284b;
-      margin-bottom: 6px;
-    }
-    .progress-bar {
-      width: 100%;
-      height: 8px;
-      background-color: #e1e8ed;
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .progress-fill {
-      height: 100%;
-      background-color: #14284b;
-    }
-    .question-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: #14284b;
-      margin-bottom: 18px;
-      line-height: 1.5;
-    }
-    .option-btn {
-      display: block;
-      width: 100%;
-      background-color: #ffffff;
-      border: 2px solid #e1e8ed;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 12px;
-      text-align: left;
-      font-size: 15px;
-      font-weight: 600;
-      color: #2c3e50;
-      cursor: pointer;
-    }
-    .option-btn:hover {
-      border-color: #14284b;
-      background-color: #f0f4fa;
-    }
-    .result-header {
-      text-align: center;
-      background: linear-gradient(135deg, #14284b 0%, #234278 100%);
-      color: #ffffff;
-      padding: 24px 16px;
-      border-radius: 12px;
-      margin-bottom: 22px;
-    }
-    .result-label {
-      font-size: 13px;
-      opacity: 0.9;
-    }
-    .result-score {
-      font-size: 46px;
-      font-weight: 800;
-      line-height: 1.1;
-      margin: 6px 0;
-      color: #ffd166;
-    }
-    .result-score span {
-      font-size: 20px;
-    }
-    .result-rank {
-      display: inline-block;
-      background: #ffffff;
-      color: #14284b;
-      font-weight: 800;
-      font-size: 14px;
-      padding: 4px 16px;
-      border-radius: 20px;
-      margin-top: 6px;
-    }
-    .card {
-      background: #ffffff;
-      border: 1px solid #e1e8ed;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 20px;
-    }
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #14284b;
-      border-left: 4px solid #14284b;
-      padding-left: 10px;
-      margin-bottom: 10px;
-    }
-    .card-text {
-      font-size: 14px;
-      color: #2c3e50;
-    }
-    .gift-box {
-      background: #fff9f2;
-      border: 2px solid #e67e22;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 26px;
-      position: relative;
-    }
-    .gift-badge {
-      position: absolute;
-      top: -12px;
-      left: 16px;
-      background: #e67e22;
-      color: #ffffff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 10px;
-      border-radius: 4px;
-    }
-    .gift-title {
-      font-size: 15px;
-      font-weight: 700;
-      color: #d35400;
-      margin-top: 4px;
-      margin-bottom: 10px;
-    }
-    .copy-area {
-      background: #ffffff;
-      border: 1px dashed #cccccc;
-      padding: 12px;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 700;
-      color: #2c3e50;
-      margin-bottom: 10px;
-    }
-    .btn-copy {
-      background: #ffffff;
-      border: 1px solid #e67e22;
-      color: #d35400;
-      padding: 9px 12px;
-      font-size: 13px;
-      font-weight: 700;
-      border-radius: 6px;
-      cursor: pointer;
-      width: 100%;
-    }
-    .cta-section {
-      background: #f0f4fa;
-      border: 1px solid #d5e0f0;
-      border-radius: 12px;
-      padding: 22px 16px;
-      text-align: center;
-      margin-bottom: 18px;
-    }
-    .cta-lead {
-      font-size: 12px;
-      font-weight: 700;
-      color: #14284b;
-      margin-bottom: 6px;
-    }
-    .cta-heading {
-      font-size: 17px;
-      font-weight: 800;
-      color: #2c3e50;
-      line-height: 1.45;
-      margin-bottom: 10px;
-    }
-    .cta-sub {
-      font-size: 13px;
-      color: #6c7a89;
-      margin-bottom: 16px;
-    }
-    .btn-note {
-      background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
-      color: #ffffff;
-      box-shadow: 0 4px 15px rgba(230, 126, 34, 0.35);
-      font-size: 15px;
-      line-height: 1.45;
-      padding: 16px 12px;
-      margin-bottom: 12px;
-    }
-    .btn-x {
-      background-color: #0f1419;
-      color: #ffffff;
-      font-size: 14px;
-      padding: 14px;
-    }
-    .btn-retry {
-      background: transparent;
-      color: #6c7a89;
-      font-size: 13px;
-      text-decoration: underline;
-      border: none;
-      cursor: pointer;
-      margin-top: 8px;
-      width: 100%;
-    }
-    footer {
-      text-align: center;
-      padding: 16px;
-      font-size: 11px;
-      color: #6c7a89;
-      border-top: 1px solid #e1e8ed;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>マッチングアプリLINE脈あり＆即レス診断｜ユウキ</title>
+<style>
+  :root {
+    --navy: #14284b;
+    --orange: #e67e22;
+    --orange-dark: #d35400;
+    --bg: #f4f6f9;
+    --text: #222;
+    --gray: #666;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: #fff;
+    box-shadow: 0 0 15px rgba(0,0,0,0.06);
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: var(--navy);
+    color: #fff;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 0.05em;
+  }
+  main { padding: 24px 20px; flex: 1; }
+  .badge {
+    display: inline-block;
+    background: rgba(230, 126, 34, 0.12);
+    color: var(--orange-dark);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  h1 {
+    font-size: 22px;
+    color: var(--navy);
+    line-height: 1.4;
+    margin-bottom: 14px;
+  }
+  .lead {
+    font-size: 14px;
+    color: var(--gray);
+    margin-bottom: 24px;
+  }
+  .btn {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-orange {
+    background: var(--orange);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.35);
+  }
+  .btn-black {
+    background: #111;
+    color: #fff;
+    margin-top: 12px;
+    font-size: 14px;
+    padding: 14px;
+  }
+  .progress-wrap {
+    margin-bottom: 20px;
+  }
+  .progress-text {
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--navy);
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .progress-bar {
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--orange);
+    transition: width 0.3s ease;
+  }
+  .q-title {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--navy);
+    margin-bottom: 20px;
+  }
+  .opt-btn {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .opt-btn:hover, .opt-btn:active {
+    border-color: var(--navy);
+    background: #f0f4f8;
+  }
+  .result-box {
+    text-align: center;
+    background: #f8fafc;
+    border: 2px solid var(--navy);
+    border-radius: 12px;
+    padding: 20px 16px;
+    margin-bottom: 22px;
+  }
+  .rank-label {
+    font-size: 13px;
+    font-weight: bold;
+    color: var(--gray);
+  }
+  .score-num {
+    font-size: 46px;
+    font-weight: 900;
+    color: var(--orange);
+    line-height: 1.1;
+    margin: 6px 0;
+  }
+  .rank-title {
+    display: inline-block;
+    background: var(--navy);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 4px 16px;
+    border-radius: 20px;
+  }
+  .sec-title {
+    font-size: 15px;
+    font-weight: bold;
+    color: var(--navy);
+    border-left: 4px solid var(--orange);
+    padding-left: 10px;
+    margin: 22px 0 10px;
+  }
+  .card-text {
+    font-size: 14px;
+    background: #f8fafc;
+    padding: 14px;
+    border-radius: 8px;
+    line-height: 1.7;
+  }
+  .phrase-box {
+    background: #fff8f1;
+    border: 1.5px dashed var(--orange);
+    border-radius: 8px;
+    padding: 14px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+    white-space: pre-wrap;
+  }
+  .copy-btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    width: 100%;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .cta-area {
+    margin-top: 28px;
+    padding-top: 22px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .cta-copy {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--navy);
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .retry-link {
+    display: block;
+    text-align: center;
+    margin-top: 18px;
+    font-size: 13px;
+    color: var(--gray);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+  footer {
+    text-align: center;
+    padding: 16px;
+    font-size: 11px;
+    color: #999;
+    background: #f8fafc;
+  }
+</style>
 </head>
 <body>
-
 <div class="container">
-  <header>
-    <div class="account-badge">ユウキ｜アプリ恋愛のLINE返信辞書</div>
-    <h1>マッチングアプリLINE脈あり＆即レス診断</h1>
-  </header>
-
+  <header>ユウキ｜アプリ恋愛のLINE返信辞書</header>
   <main id="app"></main>
-
-  <footer>
-    &copy; ユウキ｜アプリ恋愛のLINE返信辞書
-  </footer>
+  <footer>&copy; ユウキ｜アプリ恋愛のLINE返信辞書</footer>
 </div>
 
 <script>
-  var questions = [
-    {
-      q: "Q1. 相手からのLINEの返信速度はどのくらいですか？",
-      options: [
-        { text: "数分〜2時間以内に返ってくる", point: 20 },
-        { text: "半日〜1日に1回ペース", point: 12 },
-        { text: "2日〜3日空くことがある", point: 5 },
-        { text: "未読・既読スルーで数日止まっている", point: 0 }
-      ]
-    },
-    {
-      q: "Q2. 相手のメッセージに「質問（？）」は含まれていますか？",
-      options: [
-        { text: "毎回のように質問を返してくれる", point: 20 },
-        { text: "たまに質問が混ざっている", point: 13 },
-        { text: "ほとんど質問はなく、感想や相槌だけ", point: 5 },
-        { text: "「うん」「そうだね」など一言のみ", point: 0 }
-      ]
-    },
-    {
-      q: "Q3. 相手の文章のテンション（絵文字・スタンプ・文量）は？",
-      options: [
-        { text: "絵文字や「！」が多く、文章量も多い", point: 20 },
-        { text: "適度に絵文字があり、自分と同じくらいの文量", point: 14 },
-        { text: "絵文字がほぼなく、少しそっけない", point: 6 },
-        { text: "業務連絡のように淡々としている", point: 0 }
-      ]
-    },
-    {
-      q: "Q4. 食べ物や休日の話題を出したときの反応はどうですか？",
-      options: [
-        { text: "「そこ行ってみたい！」「〇〇好きです！」と食いつく", point: 20 },
-        { text: "話は広がるが、デートの話にはまだなっていない", point: 12 },
-        { text: "「いいですね〜」と流されてしまう", point: 5 },
-        { text: "まだ世間話や挨拶しかできていない", point: 3 }
-      ]
-    },
-    {
-      q: "Q5. LINE交換をしてから現在まで、どのくらい経過しましたか？",
-      options: [
-        { text: "今日〜3日以内（まだ鮮度が高い）", point: 20 },
-        { text: "4日〜1週間くらい", point: 14 },
-        { text: "1週間〜2週間（少しダレてきている）", point: 6 },
-        { text: "2週間以上（完全に友達・メル友状態）", point: 0 }
-      ]
-    }
-  ];
+const questions = [
+  {
+    q: "Q1. 相手からのLINEの返信速度は？",
+    opts: [
+      { text: "2時間以内（テンポよく返ってくる）", score: 20 },
+      { text: "半日〜1日以内", score: 14 },
+      { text: "2〜3日空くことがある", score: 7 },
+      { text: "未読・既読スルー状態", score: 0 }
+    ]
+  },
+  {
+    q: "Q2. 相手のメッセージに質問（？）はある？",
+    opts: [
+      { text: "毎回のように質問が返ってくる", score: 20 },
+      { text: "たまに質問してくれる", score: 14 },
+      { text: "ほとんど質問がない", score: 6 },
+      { text: "「うん」「そうだね」など一言のみ", score: 0 }
+    ]
+  },
+  {
+    q: "Q3. 相手の文章のテンション・絵文字・文量は？",
+    opts: [
+      { text: "文量が多くて丁寧・絵文字や「！」が多い", score: 20 },
+      { text: "自分と同じくらいの適度なテンション", score: 14 },
+      { text: "少しそっけない・絵文字が少なめ", score: 7 },
+      { text: "業務連絡のように淡々としている", score: 0 }
+    ]
+  },
+  {
+    q: "Q4. 食べ物や休日の話題への反応は？",
+    opts: [
+      { text: "「行きたい！」「好き！」と強く食いつく", score: 20 },
+      { text: "それなりに話は広がる", score: 13 },
+      { text: "軽く流されて別の話になる", score: 5 },
+      { text: "天気や仕事などの世間話のみ", score: 0 }
+    ]
+  },
+  {
+    q: "Q5. LINE交換からの経過期間は？",
+    opts: [
+      { text: "3日以内（まだ鮮度が高い）", score: 20 },
+      { text: "1週間以内", score: 15 },
+      { text: "2週間以内", score: 8 },
+      { text: "2週間以上（ダラダラ続いている）", score: 2 }
+    ]
+  }
+];
 
-  var results = [
-    {
-      minScore: 80,
-      rank: "Sランク（超高確率・即デート圏内）",
-      analysis: "今すぐ誘えば8割以上の確率でOKがもらえる絶好のタイミングです。ここで一番やってはいけないのが「もっと仲良くなってから誘おう」と世間話を続けること。アプリ女性は同時進行が基本のため、鮮度が落ちる前に今すぐ日程打診へ進みましょう。",
-      phrase: "〇〇さんと話してるとテンポ合って楽しいです！よかったら来週あたり、前に言ってた美味しいお店一緒にいきませんか？"
-    },
-    {
-      minScore: 55,
-      rank: "Aランク（脈あり・誘い方次第で即決）",
-      analysis: "好感触ですが、相手はまだ「会う決め手」を探している段階です。真面目な質問攻めや長文LINEを続けると、一気に「いい人止まり」になって他のライバル男性に抜かれます。共感と軽いユーモアを交えつつ、相手がYESと言いやすい提案を投げるのが正解です。",
-      phrase: "そういえば〇〇さんって、甘いものとお酒だったらどっち派ですか？実はめちゃくちゃ雰囲気いいお店見つけたんですよね！"
-    },
-    {
-      minScore: 30,
-      rank: "Bランク（停滞中・現状維持は危険）",
-      analysis: "現在「返信が少しずつ面倒になりかけている」危険なラインです。「今日もお疲れさま！何してた？」といった日記LINEを送ると即既読スルーされます。一度今までの流れをリセットし、相手がスマホを見ながら思わず3秒で返したくなる質問で空気を変えましょう。",
-      phrase: "お疲れさま！さっきテレビで〇〇の特集やってて、ふと〇〇さんのこと思い出したんだけど、最近もハマってる？"
-    },
-    {
-      minScore: 0,
-      rank: "Cランク（緊急事態・起死回生が必要）",
-      analysis: "正直に言うと、今のままではフェードアウト寸前です。焦って「忙しい？」「おーい」と追いLINEを送るのは絶対NG。相手の罪悪感を刺激せず、考える負担をゼロにする『2択の短文メッセージ』を投げて返信率を一気に引き上げましょう。",
-      phrase: "〇〇さん元気？最近寒すぎて布団から出られない病にかかってます（笑）〇〇さんは①インドア派 ②意外とアクティブ どっち？"
-    }
-  ];
+const resultsData = {
+  S: {
+    rank: "Sランク（脈あり濃厚）",
+    analysis: "おめでとうございます。相手の女性はあなたにかなり好意を持っており、デートへの心理的ハードルも下がっています。ただし、今の時期に安心しきってダラダラ雑談を続けるのが一番のNG行動。女性の熱量は「交換から1週間」がピークです。今日中に食事の提案をしないと、他のライバル男性に確実に奪われます。",
+    phrase: "〇〇ちゃんって本当話しやすいし、美味しいもの好きそうだから今度ぜひご飯行きたい！来週の金曜か土曜の夜って空いてたりする？"
+  },
+  A: {
+    rank: "Aランク（脈あり圏内）",
+    analysis: "十分デートに繋げられる好感触な状態です。相手も「いい人そうだな」と様子を見ています。ここでやってはいけないNG行動は、質問攻めや長文LINEで「真面目すぎるいい人止まり」になること。共通の好きな食べ物や行きたい場所の話題で少し感情を揺さぶってから、自然な流れで誘いましょう。",
+    phrase: "そういえば〇〇ちゃん前に△△好きって言ってたよね！実はめちゃくちゃ美味しいお店見つけたんだけど、今度サクッと行ってみない？"
+  },
+  B: {
+    rank: "Bランク（様子見・危険水域）",
+    analysis: "正直、今は「その他大勢のキープ枠」に入りかけています。女性が返信を面倒に感じ始めているサインです。ここで焦って追いLINEをしたり、「最近忙しい？」と機嫌を伺うのは絶対にNG。一度あなたの存在を軽く印象づける「短文＋共感・イジり」で返信のハードルを極限まで下げる必要があります。",
+    phrase: "お疲れさま！今日ふと〇〇のこと思い出して笑ったんだけど、〇〇ちゃんって意外と△△なタイプでしょ？笑"
+  },
+  C: {
+    rank: "Cランク（脈なし・撤退寸前）",
+    analysis: "厳しい現実をお伝えすると、今のままのLINEを続けてもデートに繋がる確率はほぼ0%です。女性にとって「返信するメリットがない」と判断されています。一番のNGは、質問疑問文で無理やり会話を延命させること。一度数日〜1週間ほど時間を空け、相手が思わず反応したくなる「クイズ形式・短文」で起死回生を狙いましょう。",
+    phrase: "〇〇ちゃんにちょっと聞きたいんだけど、△△と□□だったら圧倒的にどっち派？（※直感で答えて！笑）"
+  }
+};
 
-  var step = -1;
-  var totalScore = 0;
-  var currentRank = "";
-  var app = document.getElementById("app");
+let currentStep = -1;
+let totalScore = 0;
+const app = document.getElementById("app");
 
-  function render() {
+function renderStart() {
+  currentStep = -1;
+  totalScore = 0;
+  app.innerHTML = `
+    <span class="badge">無料・30秒で完了（全5問）</span>
+    <h1>マッチングアプリ<br>LINE脈あり＆即レス診断</h1>
+    <p class="lead">「返信は来るけどデートに誘えない…」「これって脈あり？それともキープ？」<br>5つの質問に答えるだけで、今の脈あり度（%）と<strong>今すぐ送るべき起死回生の1通目</strong>を診断します。</p>
+    <button class="btn btn-orange" onclick="startQuiz()">無料で診断をスタートする ▶</button>
+  `;
+}
+
+function startQuiz() {
+  currentStep = 0;
+  totalScore = 0;
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const qData = questions[currentStep];
+  const progress = ((currentStep + 1) / questions.length) * 100;
+  let optsHtml = qData.opts.map((opt, idx) =>
+    `<button class="opt-btn" onclick="selectOption(${opt.score})">${opt.text}</button>`
+  ).join("");
+
+  app.innerHTML = `
+    <div class="progress-wrap">
+      <div class="progress-text">
+        <span>質問 ${currentStep + 1} / ${questions.length}</span>
+        <span>${Math.round(progress)}%</span>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+    </div>
+    <div class="q-title">${qData.q}</div>
+    <div>${optsHtml}</div>
+  `;
+}
+
+function selectOption(score) {
+  totalScore += score;
+  currentStep++;
+  if (currentStep < questions.length) {
+    renderQuestion();
+  } else {
+    renderResult();
+  }
+}
+
+function renderResult() {
+  let key = "C";
+  if (totalScore >= 80) key = "S";
+  else if (totalScore >= 55) key = "A";
+  else if (totalScore >= 30) key = "B";
+
+  const res = resultsData[key];
+  const shareText = encodeURIComponent(`【LINE脈あり診断結果】\n私の脈あり度は「${totalScore}%（${res.rank}）」でした！\n\n▼あなたも今すぐ無料診断\n`);
+  const shareUrl = encodeURIComponent(window.location.href);
+  const hashtags = encodeURIComponent("アプリ恋愛,LINE返信辞書");
+  const twitterLink = `https://twitter.com{shareText}&url=${shareUrl}&hashtags=${hashtags}`;
+
+  app.innerHTML = `
+    <div class="result-box">
+      <div class="rank-label">あなたの現在の脈あり度は…</div>
+      <div class="score-num">${totalScore}%</div>
+      <div class="rank-title">${res.rank}</div>
+    </div>
+
+    <div class="sec-title">現状の分析と絶対NG行動</div>
+    <div class="card-text">${res.analysis}</div>
+
+    <div class="sec-title">【無料特典】起死回生の1通目フレーズ</div>
+    <div class="phrase-box" id="phraseText">${res.phrase}</div>
+    <button class="copy-btn" id="copyBtn" onclick="copyPhrase()">📋 フレーズをワンクリックでコピーする</button>
+
+    <div class="cta-area">
+      <p class="cta-copy">＼ もうLINEの返信で悩みたくない人へ ／<br>相手を沼らせ、自然な流れで会うための全技術</p>
+      <a href="https://note.com" target="_blank" rel="noopener noreferrer" class="btn btn-orange">初回デートまで完全自動化する「LINE返信テンプレ50選」はこちら（note）</a>
