@@ -15,7 +15,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Kaku Gothic ProN", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", sans-serif;
     background: var(--bg);
     color: var(--text);
     line-height: 1.6;
@@ -36,9 +36,10 @@
     padding: 14px 16px;
     font-size: 13px;
     font-weight: bold;
-    letter-spacing: 0.05em;
   }
   main { padding: 24px 20px; flex: 1; }
+  .screen { display: none; }
+  .screen.active { display: block; }
   .badge {
     display: inline-block;
     background: rgba(230, 126, 34, 0.12);
@@ -71,9 +72,7 @@
     text-align: center;
     text-decoration: none;
     cursor: pointer;
-    transition: opacity 0.2s, transform 0.1s;
   }
-  .btn:active { transform: scale(0.98); }
   .btn-orange {
     background: var(--orange);
     color: #fff;
@@ -86,9 +85,7 @@
     font-size: 14px;
     padding: 14px;
   }
-  .progress-wrap {
-    margin-bottom: 20px;
-  }
+  .progress-wrap { margin-bottom: 20px; }
   .progress-text {
     font-size: 12px;
     font-weight: bold;
@@ -127,9 +124,8 @@
     font-weight: bold;
     color: var(--text);
     cursor: pointer;
-    transition: all 0.15s;
   }
-  .opt-btn:hover, .opt-btn:active {
+  .opt-btn:active {
     border-color: var(--navy);
     background: #f0f4f8;
   }
@@ -186,7 +182,6 @@
     font-weight: bold;
     color: #333;
     margin-bottom: 10px;
-    white-space: pre-wrap;
   }
   .copy-btn {
     background: var(--navy);
@@ -232,60 +227,104 @@
 <body>
 <div class="container">
   <header>ユウキ｜アプリ恋愛のLINE返信辞書</header>
-  <main id="app"></main>
+  <main>
+    <!-- スタート画面 -->
+    <div id="startScreen" class="screen active">
+      <span class="badge">無料・30秒で完了（全5問）</span>
+      <h1>マッチングアプリ<br>LINE脈あり＆即レス診断</h1>
+      <p class="lead">「返信は来るけどデートに誘えない…」「これって脈あり？それともキープ？」<br>5つの質問に答えるだけで、今の脈あり度（%）と<strong>今すぐ送るべき起死回生の1通目</strong>を診断します。</p>
+      <button type="button" class="btn btn-orange" onclick="startQuiz()">無料で診断をスタートする ▶</button>
+    </div>
+
+    <!-- 質問画面 -->
+    <div id="quizScreen" class="screen">
+      <div class="progress-wrap">
+        <div class="progress-text">
+          <span id="qCount">質問 1 / 5</span>
+          <span id="qPercent">20%</span>
+        </div>
+        <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width:20%"></div></div>
+      </div>
+      <div id="qTitle" class="q-title"></div>
+      <div id="qOptions"></div>
+    </div>
+
+    <!-- 結果画面 -->
+    <div id="resultScreen" class="screen">
+      <div class="result-box">
+        <div class="rank-label">あなたの現在の脈あり度は…</div>
+        <div id="resScore" class="score-num">0%</div>
+        <div id="resRank" class="rank-title">判定中</div>
+      </div>
+
+      <div class="sec-title">現状の分析と絶対NG行動</div>
+      <div id="resAnalysis" class="card-text"></div>
+
+      <div class="sec-title">【無料特典】起死回生の1通目フレーズ</div>
+      <div id="resPhrase" class="phrase-box"></div>
+      <button type="button" id="copyBtn" class="copy-btn" onclick="copyPhrase()">📋 フレーズをワンクリックでコピーする</button>
+
+      <div class="cta-area">
+        <p class="cta-copy">＼ もうLINEの返信で悩みたくない人へ ／<br>相手を沼らせ、自然な流れで会うための全技術</p>
+        <a href="https://note.com" target="_blank" rel="noopener noreferrer" class="btn btn-orange">初回デートまで完全自動化する「LINE返信テンプレ50選」はこちら（note）</a>
+        <a id="xShareBtn" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-black">𝕏 診断結果をX（旧Twitter）でポストする</a>
+        <span class="retry-link" onclick="resetQuiz()">もう一度最初から診断する</span>
+      </div>
+    </div>
+  </main>
   <footer>&copy; ユウキ｜アプリ恋愛のLINE返信辞書</footer>
 </div>
 
 <script>
-const questions = [
+var quizData = [
   {
     q: "Q1. 相手からのLINEの返信速度は？",
     opts: [
-      { text: "2時間以内（テンポよく返ってくる）", score: 20 },
-      { text: "半日〜1日以内", score: 14 },
-      { text: "2〜3日空くことがある", score: 7 },
-      { text: "未読・既読スルー状態", score: 0 }
+      { t: "2時間以内（テンポよく返ってくる）", s: 20 },
+      { t: "半日〜1日以内", s: 14 },
+      { t: "2〜3日空くことがある", s: 7 },
+      { t: "未読・既読スルー状態", s: 0 }
     ]
   },
   {
     q: "Q2. 相手のメッセージに質問（？）はある？",
     opts: [
-      { text: "毎回のように質問が返ってくる", score: 20 },
-      { text: "たまに質問してくれる", score: 14 },
-      { text: "ほとんど質問がない", score: 6 },
-      { text: "「うん」「そうだね」など一言のみ", score: 0 }
+      { t: "毎回のように質問が返ってくる", s: 20 },
+      { t: "たまに質問してくれる", s: 14 },
+      { t: "ほとんど質問がない", s: 6 },
+      { t: "「うん」「そうだね」など一言のみ", s: 0 }
     ]
   },
   {
     q: "Q3. 相手の文章のテンション・絵文字・文量は？",
     opts: [
-      { text: "文量が多くて丁寧・絵文字や「！」が多い", score: 20 },
-      { text: "自分と同じくらいの適度なテンション", score: 14 },
-      { text: "少しそっけない・絵文字が少なめ", score: 7 },
-      { text: "業務連絡のように淡々としている", score: 0 }
+      { t: "文量が多くて丁寧・絵文字や「！」が多い", s: 20 },
+      { t: "自分と同じくらいの適度なテンション", s: 14 },
+      { t: "少しそっけない・絵文字が少なめ", s: 7 },
+      { t: "業務連絡のように淡々としている", s: 0 }
     ]
   },
   {
     q: "Q4. 食べ物や休日の話題への反応は？",
     opts: [
-      { text: "「行きたい！」「好き！」と強く食いつく", score: 20 },
-      { text: "それなりに話は広がる", score: 13 },
-      { text: "軽く流されて別の話になる", score: 5 },
-      { text: "天気や仕事などの世間話のみ", score: 0 }
+      { t: "「行きたい！」「好き！」と強く食いつく", s: 20 },
+      { t: "それなりに話は広がる", s: 13 },
+      { t: "軽く流されて別の話になる", s: 5 },
+      { t: "天気や仕事などの世間話のみ", s: 0 }
     ]
   },
   {
     q: "Q5. LINE交換からの経過期間は？",
     opts: [
-      { text: "3日以内（まだ鮮度が高い）", score: 20 },
-      { text: "1週間以内", score: 15 },
-      { text: "2週間以内", score: 8 },
-      { text: "2週間以上（ダラダラ続いている）", score: 2 }
+      { t: "3日以内（まだ鮮度が高い）", s: 20 },
+      { t: "1週間以内", s: 15 },
+      { t: "2週間以内", s: 8 },
+      { t: "2週間以上（ダラダラ続いている）", s: 2 }
     ]
   }
 ];
 
-const resultsData = {
+var resultMaster = {
   S: {
     rank: "Sランク（脈あり濃厚）",
     analysis: "おめでとうございます。相手の女性はあなたにかなり好意を持っており、デートへの心理的ハードルも下がっています。ただし、今の時期に安心しきってダラダラ雑談を続けるのが一番のNG行動。女性の熱量は「交換から1週間」がピークです。今日中に食事の提案をしないと、他のライバル男性に確実に奪われます。",
@@ -308,83 +347,36 @@ const resultsData = {
   }
 };
 
-let currentStep = -1;
-let totalScore = 0;
-const app = document.getElementById("app");
+var step = 0;
+var score = 0;
 
-function renderStart() {
-  currentStep = -1;
-  totalScore = 0;
-  app.innerHTML = `
-    <span class="badge">無料・30秒で完了（全5問）</span>
-    <h1>マッチングアプリ<br>LINE脈あり＆即レス診断</h1>
-    <p class="lead">「返信は来るけどデートに誘えない…」「これって脈あり？それともキープ？」<br>5つの質問に答えるだけで、今の脈あり度（%）と<strong>今すぐ送るべき起死回生の1通目</strong>を診断します。</p>
-    <button class="btn btn-orange" onclick="startQuiz()">無料で診断をスタートする ▶</button>
-  `;
+function showScreen(id) {
+  document.getElementById("startScreen").classList.remove("active");
+  document.getElementById("quizScreen").classList.remove("active");
+  document.getElementById("resultScreen").classList.remove("active");
+  document.getElementById(id).classList.add("active");
 }
 
 function startQuiz() {
-  currentStep = 0;
-  totalScore = 0;
+  step = 0;
+  score = 0;
+  showScreen("quizScreen");
   renderQuestion();
 }
 
 function renderQuestion() {
-  const qData = questions[currentStep];
-  const progress = ((currentStep + 1) / questions.length) * 100;
-  let optsHtml = qData.opts.map((opt, idx) =>
-    `<button class="opt-btn" onclick="selectOption(${opt.score})">${opt.text}</button>`
-  ).join("");
+  var item = quizData[step];
+  var pct = Math.round(((step + 1) / quizData.length) * 100);
+  document.getElementById("qCount").innerText = "質問 " + (step + 1) + " / " + quizData.length;
+  document.getElementById("qPercent").innerText = pct + "%";
+  document.getElementById("progressFill").style.width = pct + "%";
+  document.getElementById("qTitle").innerText = item.q;
 
-  app.innerHTML = `
-    <div class="progress-wrap">
-      <div class="progress-text">
-        <span>質問 ${currentStep + 1} / ${questions.length}</span>
-        <span>${Math.round(progress)}%</span>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
-    </div>
-    <div class="q-title">${qData.q}</div>
-    <div>${optsHtml}</div>
-  `;
-}
-
-function selectOption(score) {
-  totalScore += score;
-  currentStep++;
-  if (currentStep < questions.length) {
-    renderQuestion();
-  } else {
-    renderResult();
-  }
-}
-
-function renderResult() {
-  let key = "C";
-  if (totalScore >= 80) key = "S";
-  else if (totalScore >= 55) key = "A";
-  else if (totalScore >= 30) key = "B";
-
-  const res = resultsData[key];
-  const shareText = encodeURIComponent(`【LINE脈あり診断結果】\n私の脈あり度は「${totalScore}%（${res.rank}）」でした！\n\n▼あなたも今すぐ無料診断\n`);
-  const shareUrl = encodeURIComponent(window.location.href);
-  const hashtags = encodeURIComponent("アプリ恋愛,LINE返信辞書");
-  const twitterLink = `https://twitter.com{shareText}&url=${shareUrl}&hashtags=${hashtags}`;
-
-  app.innerHTML = `
-    <div class="result-box">
-      <div class="rank-label">あなたの現在の脈あり度は…</div>
-      <div class="score-num">${totalScore}%</div>
-      <div class="rank-title">${res.rank}</div>
-    </div>
-
-    <div class="sec-title">現状の分析と絶対NG行動</div>
-    <div class="card-text">${res.analysis}</div>
-
-    <div class="sec-title">【無料特典】起死回生の1通目フレーズ</div>
-    <div class="phrase-box" id="phraseText">${res.phrase}</div>
-    <button class="copy-btn" id="copyBtn" onclick="copyPhrase()">📋 フレーズをワンクリックでコピーする</button>
-
-    <div class="cta-area">
-      <p class="cta-copy">＼ もうLINEの返信で悩みたくない人へ ／<br>相手を沼らせ、自然な流れで会うための全技術</p>
-      <a href="https://note.com" target="_blank" rel="noopener noreferrer" class="btn btn-orange">初回デートまで完全自動化する「LINE返信テンプレ50選」はこちら（note）</a>
+  var box = document.getElementById("qOptions");
+  box.innerHTML = "";
+  for (var i = 0; i < item.opts.length; i++) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "opt-btn";
+    btn.innerText = item.opts[i].t;
+    btn.setAttribute("data-score", item.opts[i].s);
